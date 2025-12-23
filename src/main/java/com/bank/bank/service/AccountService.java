@@ -13,11 +13,10 @@ import java.util.Optional;
 @Service
 public class AccountService {
 
-
     @Autowired
     AccountRepository accountRepository;
 
-    private int checkAccount(String iban) {
+    private boolean isIBANAccount(String iban) {
 
         return Util.getInstance().checkBankAccountNumber(iban);
 
@@ -31,7 +30,7 @@ public class AccountService {
             throw new AccountAlreadyExistsException("Het IBAN nummer is al aanwezig");
         }
 
-        if (checkAccount(account.getIban()) == 0) {
+        if (isIBANAccount(account.getIban())) {
 
             accountRepository.save(account);
             return "Account saved";

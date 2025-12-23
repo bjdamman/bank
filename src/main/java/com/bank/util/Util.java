@@ -1,5 +1,17 @@
 package com.bank.util;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+@FunctionalInterface
+interface MyInterface {
+
+   // abstract method
+   Boolean checkIBAN(String n);
+}
+
+
+
 public class Util {
 
    private final String ibanConstant = "NL25BANQ";
@@ -14,28 +26,50 @@ public class Util {
       return INSTANCE;
    }
 
-   public Integer checkBankAccountNumber(String ibanAccountNumber) {
+   public boolean checkBankAccountNumber(String ibanAccountNumber) {
 
-      if (!ibanAccountNumber.contains(ibanConstant))  {
-         return 1;
-      }
+     if (checkIBANSuffix(ibanAccountNumber) && checkIBANdigits(ibanAccountNumber) )
+       return true;
+     else
+       return false;
+   }
 
-      int sum = 0;
+   public boolean checkIBANSuffix(String ibanAccountNumber) {
+      Pattern pattern = Pattern.compile("NL25BANQ\\d{10}");
 
-      for (int i = 8; i < (ibanAccountNumber.length()-1); i++) {
+      Matcher matcher = pattern.matcher(ibanAccountNumber);
 
-         sum += Integer.parseInt(String.valueOf(ibanAccountNumber.charAt(i)));
+      if (!matcher.find())
+         return false;
+      else
+         return true;
 
-      }
+   }
 
-      int checkNumber = Integer.parseInt(String.valueOf(ibanAccountNumber.charAt(ibanAccountNumber.length()-1)));
+   public boolean checkIBANdigits(String ibanAccountNumber) {
 
-      if (sum % 10 != checkNumber) {
 
-        return 2;
-      }
+      MyInterface ref = (str) -> {
 
-      return 0;
+         int sum = 0;
+
+         for (int i = 8; i < (ibanAccountNumber.length()-1); i++) {
+
+            sum += Integer.parseInt(String.valueOf(ibanAccountNumber.charAt(i)));
+
+         }
+
+         int checkNumber = Integer.parseInt(String.valueOf(ibanAccountNumber.charAt(ibanAccountNumber.length()-1)));
+
+         if (sum % 10 != checkNumber)
+            return false;
+         else
+            return true;
+
+      };
+
+      return ref.checkIBAN(ibanAccountNumber);
+
    }
 
 }

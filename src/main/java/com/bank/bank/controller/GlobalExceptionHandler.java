@@ -16,4 +16,6 @@ public class GlobalExceptionHandler {
     public @ResponseBody ErrorResponse handleException(NoSuchAccountExistsException ex) {
         return new ErrorResponse(HttpStatus.NOT_FOUND.value(), ex.getMessage());
     }
+
+
 }
