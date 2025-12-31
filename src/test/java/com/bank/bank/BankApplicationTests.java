@@ -1,10 +1,12 @@
 package com.bank.bank;
 
 import com.bank.bank.dao.AccountRepository;
+import com.bank.bank.exception.AccountAlreadyExistsException;
 import com.bank.bank.exception.AccountInvalidException;
 import com.bank.bank.model.Account;
 import com.bank.bank.service.AccountService;
 import com.bank.util.Util;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -14,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -143,6 +146,30 @@ class BankApplicationTests {
 		});
 
 		String expectedMessage = "Het IBAN nummer is ongeldig";
+		String actualMessage = exception.getMessage();
+
+		assertTrue(actualMessage.contains(expectedMessage));
+
+	}
+
+	@Test
+	void shouldNotSaveAccountAlreadyExists() {
+		// Arrange
+		Account mockAccount1 = new Account();
+		mockAccount1.setIban("NL25BANQ0234567896");
+
+		MockitoAnnotations.openMocks(this);
+
+		when(accountRepository.findByIban(mockAccount1.getIban())).thenReturn((Optional.of(mockAccount1)));
+
+		when(accountRepository.save(Mockito.any(Account.class)))
+				.thenAnswer(i -> i.getArguments()[0]);
+		// Act
+		Exception exception = assertThrows(AccountAlreadyExistsException.class, () -> {
+			accountService.saveAccount(mockAccount1);
+		});
+
+		String expectedMessage = "Het IBAN nummer is al aanwezig";
 		String actualMessage = exception.getMessage();
 
 		assertTrue(actualMessage.contains(expectedMessage));
