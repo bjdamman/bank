@@ -8,6 +8,7 @@ import com.bank.util.Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -20,6 +21,11 @@ public class AccountService {
 
         return Util.getInstance().checkBankAccountNumber(iban);
 
+    }
+
+    public List<Account> listAccount() {
+
+        return accountRepository.findAll();
     }
 
     public String saveAccount(Account account) {

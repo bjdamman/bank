@@ -3,14 +3,13 @@ package com.bank.util;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+
 @FunctionalInterface
-interface MyInterface {
+interface MyUtilInterface {
 
    // abstract method
    Boolean checkIBAN(String n);
 }
-
-
 
 public class Util {
 
@@ -28,13 +27,13 @@ public class Util {
 
    public boolean checkBankAccountNumber(String ibanAccountNumber) {
 
-     if (checkIBANSuffix(ibanAccountNumber) && checkIBANdigits(ibanAccountNumber) )
+     if (checkIBANformat(ibanAccountNumber) && checkIBANdigits(ibanAccountNumber.substring(8) ))
        return true;
      else
        return false;
    }
 
-   public boolean checkIBANSuffix(String ibanAccountNumber) {
+   public boolean checkIBANformat(String ibanAccountNumber) {
       Pattern pattern = Pattern.compile("NL25BANQ\\d{10}");
 
       Matcher matcher = pattern.matcher(ibanAccountNumber);
@@ -48,12 +47,11 @@ public class Util {
 
    public boolean checkIBANdigits(String ibanAccountNumber) {
 
-
-      MyInterface ref = (str) -> {
+      MyUtilInterface ref = (str) -> {
 
          int sum = 0;
 
-         for (int i = 8; i < (ibanAccountNumber.length()-1); i++) {
+         for (int i = 0; i < (ibanAccountNumber.length()-1); i++) {
 
             sum += Integer.parseInt(String.valueOf(ibanAccountNumber.charAt(i)));
 
