@@ -6,7 +6,6 @@ import com.bank.bank.exception.AccountInvalidException;
 import com.bank.bank.model.Account;
 import com.bank.bank.service.AccountService;
 import com.bank.util.Util;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
