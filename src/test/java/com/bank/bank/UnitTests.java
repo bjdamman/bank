@@ -16,6 +16,8 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
@@ -45,6 +47,8 @@ public class UnitTests {
         when(accountRepository.findAll(org.mockito.ArgumentMatchers.isA(Pageable.class))).thenReturn(pagedAccounts);
 
         Page<Account> pagedAccountsReturn = accountService.listAccount(0,10);
+
+        verify(accountRepository,Mockito.times(1)).findAll(org.mockito.ArgumentMatchers.isA(Pageable.class));
         // Assert
         assertEquals("IBAN gevonden","NL25BANQ0234567894", pagedAccountsReturn.getContent().getFirst().getIban());
     }
@@ -57,15 +61,17 @@ public class UnitTests {
 
         MockitoAnnotations.openMocks(this);
 
-        when(accountRepository.existsByIban(Mockito.any()))
+        when(accountRepository.existsByIban(any()))
                 .thenReturn(true);
 
-        when(accountRepository.save(Mockito.any(Account.class)))
+        when(accountRepository.save(any(Account.class)))
                 .thenAnswer(i -> i.getArguments()[0]);
         // Act
         Exception exception = assertThrows(AccountAlreadyExistException.class, () -> {
             accountService.saveAccount(mockAccount1);
         });
+
+        verify(accountRepository,Mockito.times(1)).existsByIban(any());
 
         String expectedMessage = "Iban is al aanwezig";
         String actualMessage = exception.getMessage();
