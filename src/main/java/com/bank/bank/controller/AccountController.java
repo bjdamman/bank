@@ -39,13 +39,13 @@ public class AccountController {
     @ExceptionHandler(value = AccountAlreadyExistsException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     public ErrorResponse handleCustomerAlreadyExistsException(AccountAlreadyExistsException ex) {
-        return new ErrorResponse(HttpStatus.CONFLICT.value(), ex.getMessage());
+        return new ErrorResponse(HttpStatus.CONFLICT.value());
     }
 
     @ExceptionHandler(value = AccountInvalidException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     public ErrorResponse handleCustomerAlreadyExistsException(AccountInvalidException ex) {
-        return new ErrorResponse(HttpStatus.CONFLICT.value(), ex.getMessage());
+        return new ErrorResponse(HttpStatus.CONFLICT.value());
     }
 
     @ResponseBody
