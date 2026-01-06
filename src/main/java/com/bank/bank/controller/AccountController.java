@@ -1,7 +1,6 @@
 package com.bank.bank.controller;
 
-import com.bank.bank.model.AccountRepresentation;
-import com.bank.bank.model.AccountSaveRequest;
+import com.bank.bank.model.Account;
 import com.bank.bank.service.AccountService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,18 +16,18 @@ public class AccountController {
     AccountService accountService;
 
     @GetMapping("/list")
-    public ResponseEntity<Page<AccountRepresentation>> listAccount(
+    public ResponseEntity<Page<Account>> listAccount(
             @RequestParam(value = "pageNum", defaultValue = "0") int pageNum,
             @RequestParam(value = "pageSize", defaultValue = "10") int pageSize) {
 
-            Page<AccountRepresentation> allAccount = accountService.listAccount(pageNum, pageSize);
+            Page<Account> allAccount = accountService.listAccount(pageNum, pageSize);
             return ResponseEntity.ok().body(allAccount);
     }
 
     @PostMapping("/save")
-    public ResponseEntity<Void> saveAccount(@RequestBody @Valid AccountSaveRequest accountSaveRequest) {
+    public ResponseEntity<Void> saveAccount(@RequestBody @Valid Account account) {
 
-        accountService.saveAccount(accountSaveRequest);
+        accountService.saveAccount(account);
         return ResponseEntity.ok().build();
     }
 

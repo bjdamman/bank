@@ -1,12 +1,12 @@
 package com.bank.bank.model;
 
+import com.bank.bank.validator.Iban;
 import jakarta.persistence.*;
-import lombok.Builder;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 @Data
 @Entity
-@Builder
 @Table(name = "account")
 public class Account {
 
@@ -15,11 +15,9 @@ public class Account {
     @Column(name = "id")
     private Long id;
 
+    @Iban
+    @NotBlank
     @Column(name = "iban", nullable = false)
     private String iban;
 
-    public AccountRepresentation toAccountRepresentation() {
-        return AccountRepresentation.builder().iban(this.iban)
-                .iban(this.iban).build();
-    }
 }

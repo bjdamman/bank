@@ -3,8 +3,6 @@ package com.bank.bank.service;
 import com.bank.bank.dao.AccountRepository;
 import com.bank.bank.exception.AccountAlreadyExistException;
 import com.bank.bank.model.Account;
-import com.bank.bank.model.AccountRepresentation;
-import com.bank.bank.model.AccountSaveRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -25,16 +23,15 @@ public class AccountService {
     @Autowired
     AccountRepository accountRepository;
 
-    public Page<AccountRepresentation> listAccount(int pageNum, int pageSize) {
+    public Page<Account> listAccount(int pageNum, int pageSize) {
 
-        return accountRepository.findAll(PageRequest.of(pageNum, pageSize)).map(Account::toAccountRepresentation);
+        return accountRepository.findAll(PageRequest.of(pageNum, pageSize));
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public void saveAccount(AccountSaveRequest accountSaveRequest) {
+    public void saveAccount(Account account) {
 
-        ensureAccountNotExist(accountSaveRequest.getIban());
-        Account account = accountSaveRequest.toAccount();
+        ensureAccountNotExist(account.getIban());
 
         accountRepository.save(account);
     }
