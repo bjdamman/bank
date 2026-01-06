@@ -37,7 +37,6 @@ class BankApplicationTests {
 	// Unit tests
 	@Test
 	public void testCorrectBankAccountDigits() {
-        //Test Correcte IBAN
 
 		assertEquals("IBAN number correct", true, util.isIbanValid("NL25BANQ0234567894"));
 	}
@@ -45,6 +44,7 @@ class BankApplicationTests {
 	@Test
 	public void testIncorrectBankAccountDigits() {
 
+		//Negatieve BBAN test
 		assertEquals("IBAN nummer incorrect", false, util.isIbanValid("NL25BANQ0234567895"));
 	}
 
@@ -57,6 +57,7 @@ class BankApplicationTests {
 	@Test
 	public void testIncorrectBankAccountFormat() {
 
+		//Negatieve IBAN land code,controle nummer en bankkey test
 		assertEquals("IBAN nummer incorrect", false, util.isIBANKeyformat("NL45BANQ0234567894"));
 	}
 
@@ -70,13 +71,14 @@ class BankApplicationTests {
 	@Test
 	public void testIncorrectBankAccount() {
 
+		//Negatieve IBAN check account test
 		assertEquals("IBAN nummer incorrect", false, util.isIBANAccountNumberValid("NL45BANQ0334567894"));
 	}
 
 	// Services tests
 	@Test
 	void shouldReturnAccountList() {
-		// Arrange
+
 		Account mockAccount1 = new Account();
 		mockAccount1.setIban("NL25BANQ0234567894");
 		Account mockAccount2 = new Account();
@@ -88,16 +90,14 @@ class BankApplicationTests {
 
 		when(accountRepository.findAll()).thenReturn(accountList);
 
-		// Get list
 		List<Account> resultList = accountService.listAccount();
 
-		// Assert
 		assertEquals("IBAN gevonden","NL25BANQ0234567894", resultList.getFirst().getIban());
 	}
 
 	@Test
 	void shouldReturnAccountListCheckNumber() {
-		// Arrange
+
 		Account mockAccount1 = new Account();
 		mockAccount1.setIban("NL25BANQ0234567894");
 		Account mockAccount2 = new Account();
@@ -116,7 +116,7 @@ class BankApplicationTests {
 
 	@Test
 	void shouldSaveAccount() {
-		// Arrange
+
 		Account mockAccount1 = new Account();
 		mockAccount1.setIban("NL25BANQ0234567894");
 
@@ -124,7 +124,7 @@ class BankApplicationTests {
 
 		when(accountRepository.save(Mockito.any(Account.class)))
 				.thenAnswer(i -> i.getArguments()[0]);
-		// Act
+
 		Account result = accountService.saveAccount(mockAccount1);
 
 		assertEquals("Account correct opgeslagen", result.getIban(), "NL25BANQ0234567894");
@@ -132,7 +132,8 @@ class BankApplicationTests {
 
 	@Test
 	void shouldNotSaveAccount() {
-		// Arrange
+
+		// Negatieve save account test
 		Account mockAccount1 = new Account();
 		mockAccount1.setIban("NL25BANQ0234567896");
 
@@ -140,7 +141,7 @@ class BankApplicationTests {
 
 		when(accountRepository.save(Mockito.any(Account.class)))
 				.thenAnswer(i -> i.getArguments()[0]);
-		// Act
+
 		Exception exception = assertThrows(AccountInvalidException.class, () -> {
 			accountService.saveAccount(mockAccount1);
 		});
@@ -154,7 +155,8 @@ class BankApplicationTests {
 
 	@Test
 	void shouldNotSaveAccountAlreadyExists() {
-		// Arrange
+
+		// Negatieve save account bestaat al test ,
 		Account mockAccount1 = new Account();
 		mockAccount1.setIban("NL25BANQ0234567896");
 
@@ -164,7 +166,7 @@ class BankApplicationTests {
 
 		when(accountRepository.save(Mockito.any(Account.class)))
 				.thenAnswer(i -> i.getArguments()[0]);
-		// Act
+
 		Exception exception = assertThrows(AccountAlreadyExistsException.class, () -> {
 			accountService.saveAccount(mockAccount1);
 		});

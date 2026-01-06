@@ -1,6 +1,5 @@
 package com.bank.util;
 
-import java.math.BigInteger;
 import java.util.regex.Pattern;
 
 public class Util {
@@ -24,11 +23,11 @@ public class Util {
 
        StringBuilder sbIbanAccountNumber = new StringBuilder(ibanAccountNumber);
 
-       int IBAN_NUMBER_LENGTH = 17;
+       int IBAN_END_NUMBER_LENGTH = 17;
        int IBAN_CONTROL_NUMBER_INDEX = 17;
        int IBAN_START_NUMBER_INDEX = 8;
 
-       int ibanDigits = Integer.parseInt(sbIbanAccountNumber.substring(IBAN_START_NUMBER_INDEX, IBAN_NUMBER_LENGTH));
+       int ibanDigits = Integer.parseInt(sbIbanAccountNumber.substring(IBAN_START_NUMBER_INDEX, IBAN_END_NUMBER_LENGTH));
        int ibanControlNumber = Integer.parseInt(sbIbanAccountNumber.substring(IBAN_CONTROL_NUMBER_INDEX));
 
        int sum = String.valueOf(ibanDigits)
