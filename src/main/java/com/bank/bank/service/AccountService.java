@@ -17,10 +17,9 @@ public class AccountService {
     @Autowired
     AccountRepository accountRepository;
 
-    private boolean isIBANAccount(String iban) {
+    private boolean isIBANAccount(String ibanFromApi) {
 
-        return Util.getInstance().checkBankAccountNumber(iban);
-
+        return Util.getInstance().isIBANAccountNumberValid(ibanFromApi);
     }
 
     public List<Account> listAccount() {
@@ -28,22 +27,21 @@ public class AccountService {
         return accountRepository.findAll();
     }
 
-    public String saveAccount(Account account) {
+    public Account saveAccount(Account accountFromApi) {
 
-        Optional<Account> existingCustomer = accountRepository.findByIban(account.getIban());
+        Optional<Account> accountFromDb = accountRepository.findByIban(accountFromApi.getIban());
 
-        if (existingCustomer.isPresent()) {
+        if (accountFromDb.isPresent()) {
             throw new AccountAlreadyExistsException("Het IBAN nummer is al aanwezig");
         }
 
-        if (isIBANAccount(account.getIban())) {
+        if (isIBANAccount(accountFromApi.getIban())) {
 
-            accountRepository.save(account);
-            return "Account saved";
+           return accountRepository.save(accountFromApi);
+
         } else {
 
             throw new AccountInvalidException("Het IBAN nummer is ongeldig");
         }
-
     }
 }

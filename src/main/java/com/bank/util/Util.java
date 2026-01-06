@@ -1,19 +1,9 @@
 package com.bank.util;
 
-import java.util.regex.Matcher;
+import java.math.BigInteger;
 import java.util.regex.Pattern;
 
-
-@FunctionalInterface
-interface MyUtilInterface {
-
-   // abstract method
-   Boolean checkIBAN(String n);
-}
-
 public class Util {
-
-   private final String ibanConstant = "NL25BANQ";
 
    private static Util INSTANCE;
 
@@ -25,48 +15,44 @@ public class Util {
       return INSTANCE;
    }
 
-   public boolean checkBankAccountNumber(String ibanAccountNumber) {
 
-     if (checkIBANformat(ibanAccountNumber) && checkIBANdigits(ibanAccountNumber.substring(8) ))
-       return true;
-     else
-       return false;
+   public boolean isIbanValid(String ibanAccountNumber) throws NumberFormatException {
+
+      /* Deze methode geeft de som van de eerste 9 digits van het BBAN nummer
+         en rekent de modules uit en vergelijkt de uitkomst met het laatste BBAN controle
+         nummer */
+
+       StringBuilder sbIbanAccountNumber = new StringBuilder(ibanAccountNumber);
+
+       int IBAN_NUMBER_LENGTH = 17;
+       int IBAN_CONTROL_NUMBER_INDEX = 17;
+       int IBAN_START_NUMBER_INDEX = 8;
+
+       int ibanDigits = Integer.parseInt(sbIbanAccountNumber.substring(IBAN_START_NUMBER_INDEX, IBAN_NUMBER_LENGTH));
+       int ibanControlNumber = Integer.parseInt(sbIbanAccountNumber.substring(IBAN_CONTROL_NUMBER_INDEX));
+
+       int sum = String.valueOf(ibanDigits)
+                 .chars()
+                 .map(c -> c - '0')
+                 .sum();
+
+       return (sum % 10) == ibanControlNumber;
    }
 
-   public boolean checkIBANformat(String ibanAccountNumber) {
-      Pattern pattern = Pattern.compile("NL25BANQ\\d{10}");
+   public boolean isIBANAccountNumberValid(String ibanAccountNumber) {
 
-      Matcher matcher = pattern.matcher(ibanAccountNumber);
-
-      if (!matcher.find())
-         return false;
-      else
-         return true;
+       return isIBANKeyformat(ibanAccountNumber) &&
+              isIbanValid(ibanAccountNumber);
 
    }
 
-   public boolean checkIBANdigits(String ibanAccountNumber) {
+   public boolean isIBANKeyformat(String ibanAccountNumber) {
 
-      MyUtilInterface ref = (str) -> {
+      /*Check de IBAN landcode , controlenummer en bankkey */
 
-         int sum = 0;
-
-         for (int i = 0; i < (ibanAccountNumber.length()-1); i++) {
-
-            sum += Integer.parseInt(String.valueOf(ibanAccountNumber.charAt(i)));
-
-         }
-
-         int checkNumber = Integer.parseInt(String.valueOf(ibanAccountNumber.charAt(ibanAccountNumber.length()-1)));
-
-         if (sum % 10 != checkNumber)
-            return false;
-         else
-            return true;
-
-      };
-
-      return ref.checkIBAN(ibanAccountNumber);
+      String IBAN_COUNTRY_BANK_KEY = "NL25BANQ";
+      Pattern pattern = Pattern.compile(IBAN_COUNTRY_BANK_KEY + "\\d{10}");
+      return pattern.matcher(ibanAccountNumber).find();
 
    }
 

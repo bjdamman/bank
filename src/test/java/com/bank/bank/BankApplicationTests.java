@@ -37,39 +37,40 @@ class BankApplicationTests {
 	// Unit tests
 	@Test
 	public void testCorrectBankAccountDigits() {
+        //Test Correcte IBAN
 
-		assertEquals("IBAN number correct", true, util.checkIBANdigits("0234567894"));
+		assertEquals("IBAN number correct", true, util.isIbanValid("NL25BANQ0234567894"));
 	}
 
 	@Test
 	public void testIncorrectBankAccountDigits() {
 
-		assertEquals("IBAN nummer incorrect", false, util.checkIBANdigits("0234567895"));
+		assertEquals("IBAN nummer incorrect", false, util.isIbanValid("NL25BANQ0234567895"));
 	}
 
 	@Test
 	public void testCorrectBankAccountFormat() {
 
-		assertEquals("IBAN nummer correct", true, util.checkIBANformat("NL25BANQ0234567894"));
+		assertEquals("IBAN nummer correct", true, util.isIBANKeyformat("NL25BANQ0234567894"));
 	}
 
 	@Test
 	public void testIncorrectBankAccountFormat() {
 
-		assertEquals("IBAN nummer incorrect", false, util.checkIBANformat("NL45BANQ0234567894"));
+		assertEquals("IBAN nummer incorrect", false, util.isIBANKeyformat("NL45BANQ0234567894"));
 	}
 
 	@Test
 	public void testCorrectBankAccount() {
 
-		assertEquals("IBAN nummer correct", true, util.checkBankAccountNumber("NL25BANQ0234567894"));
+		assertEquals("IBAN nummer correct", true, util.isIBANAccountNumberValid("NL25BANQ0234567894"));
 
 	}
 
 	@Test
 	public void testIncorrectBankAccount() {
 
-		assertEquals("IBAN nummer incorrect", false, util.checkBankAccountNumber("NL45BANQ0334567894"));
+		assertEquals("IBAN nummer incorrect", false, util.isIBANAccountNumberValid("NL45BANQ0334567894"));
 	}
 
 	// Services tests
@@ -124,9 +125,9 @@ class BankApplicationTests {
 		when(accountRepository.save(Mockito.any(Account.class)))
 				.thenAnswer(i -> i.getArguments()[0]);
 		// Act
-		String result = accountService.saveAccount(mockAccount1);
+		Account result = accountService.saveAccount(mockAccount1);
 
-		assertEquals("Account correct opgeslagen", result, "Account saved");
+		assertEquals("Account correct opgeslagen", result.getIban(), "NL25BANQ0234567894");
 	}
 
 	@Test

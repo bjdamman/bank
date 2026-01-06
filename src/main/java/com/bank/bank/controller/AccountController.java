@@ -30,11 +30,12 @@ public class AccountController {
     }
 
     @PostMapping("/save")
-    public String saveAccount(@RequestBody Account account) {
+    public Account saveAccount(@RequestBody Account accountFromApi) {
 
-        return accountService.saveAccount(account);
+        return accountService.saveAccount(accountFromApi);
     }
 
+    // Exception definitions
     @ExceptionHandler(value = AccountAlreadyExistsException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     public ErrorResponse handleCustomerAlreadyExistsException(AccountAlreadyExistsException ex) {
