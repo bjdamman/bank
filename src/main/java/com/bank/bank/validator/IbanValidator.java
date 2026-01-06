@@ -3,8 +3,6 @@ package com.bank.bank.validator;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
-import java.util.regex.Pattern;
-
 public class IbanValidator implements ConstraintValidator<Iban, String> {
     /**
      * IBAN controle, moet bestaan uit landcode, controlenummer , bankkey en BBAN

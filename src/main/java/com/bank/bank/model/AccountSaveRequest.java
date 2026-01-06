@@ -1,6 +1,5 @@
 package com.bank.bank.model;
 
-
 import com.bank.bank.validator.Iban;
 import lombok.AllArgsConstructor;
 import lombok.Data;
