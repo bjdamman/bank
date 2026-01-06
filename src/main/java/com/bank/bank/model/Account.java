@@ -13,7 +13,7 @@ public class Account {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "iban", length = 18, nullable = false)
+    @Column(name = "iban", nullable = false)
     private String iban;
 
 }
