@@ -20,9 +20,6 @@ public class AccountController {
     @Autowired
     AccountService accountService;
 
-    @Autowired
-    AccountRepository accountRepository;
-
     @GetMapping("/list")
     public List<Account> listAccount() {
 

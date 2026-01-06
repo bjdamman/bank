@@ -48,7 +48,7 @@ public class Util {
    public boolean isIBANKeyformat(String ibanAccountNumber) {
 
       /*Check de IBAN landcode , controlenummer en bankkey
-        Check de IBAN lengte = MAX 10 
+        Check de IBAN lengte = MAX 10
        */
 
       String IBAN_COUNTRY_BANK_KEY = "NL25BANQ";
