@@ -1,17 +1,15 @@
 package com.bank.bank.controller;
 
-import com.bank.bank.dao.AccountRepository;
-import com.bank.bank.exception.AccountAlreadyExistsException;
-import com.bank.bank.exception.AccountInvalidException;
-import com.bank.bank.model.Account;
+import com.bank.bank.model.AccountRepresentation;
+import com.bank.bank.model.AccountSaveRequest;
 import com.bank.bank.service.AccountService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.bind.annotation.*;
-import com.bank.util.ErrorResponse;
-import java.util.List;
 
 @RestController
 @RequestMapping("/account")
@@ -21,33 +19,19 @@ public class AccountController {
     AccountService accountService;
 
     @GetMapping("/list")
-    public List<Account> listAccount() {
+    public ResponseEntity<Page<AccountRepresentation>> listAccount(
+            @RequestParam(value = "pageNum", defaultValue = "0") int pageNum,
+            @RequestParam(value = "pageSize", defaultValue = "10") int pageSize) {
 
-        return accountService.listAccount();
+            Page<AccountRepresentation> allAccount = accountService.listAccount(pageNum, pageSize);
+            return ResponseEntity.ok().body(allAccount);
     }
 
     @PostMapping("/save")
-    public Account saveAccount(@RequestBody Account accountFromApi) {
+    public ResponseEntity<Void> saveAccount(@RequestBody @Valid AccountSaveRequest accountSaveRequest) {
 
-        return accountService.saveAccount(accountFromApi);
+        accountService.saveAccount(accountSaveRequest);
+        return ResponseEntity.ok().build();
     }
 
-    // Exception definitions
-    @ExceptionHandler(value = AccountAlreadyExistsException.class)
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public ErrorResponse handleAccountAlreadyExistsException(AccountAlreadyExistsException ex) {
-        return new ErrorResponse(HttpStatus.CONFLICT.value(),ex.getMessage());
-    }
-
-    @ExceptionHandler(value = AccountInvalidException.class)
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public ErrorResponse handleAccountAlreadyExistsException(AccountInvalidException ex) {
-        return new ErrorResponse(HttpStatus.CONFLICT.value(), ex.getMessage());
-    }
-
-    @ResponseBody
-    @ExceptionHandler(HttpMediaTypeNotAcceptableException.class)
-    public String handleHttpMediaTypeNotAcceptableException() {
-        return "acceptable MIME type:" + MediaType.APPLICATION_JSON_VALUE;
-    }
 }

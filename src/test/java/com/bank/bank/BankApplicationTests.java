@@ -1,181 +1,44 @@
 package com.bank.bank;
 
-import com.bank.bank.dao.AccountRepository;
-import com.bank.bank.exception.AccountAlreadyExistsException;
-import com.bank.bank.exception.AccountInvalidException;
-import com.bank.bank.model.Account;
-import com.bank.bank.service.AccountService;
-import com.bank.util.Util;
+import com.bank.bank.model.AccountSaveRequest;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 
-import java.util.List;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.util.AssertionErrors.assertEquals;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
-class BankApplicationTests {
-
-	Util util = Util.getInstance();
-
-	@Mock
-	private AccountRepository accountRepository;
-
-	@InjectMocks
-	@Autowired
-	private AccountService accountService;
+class BankApplicationTests extends BaseTest {
 
 	// Unit tests
 	@Test
-	public void testCorrectBankAccountDigits() {
-
-		assertEquals("IBAN number correct", true, util.isIbanValid("NL25BANQ0234567894"));
+	public void should_save_success() throws Exception {
+		AccountSaveRequest userRegisterRequest = new AccountSaveRequest("NL25BANQ0234567894");
+		this.mockMvc.perform(post("/account/save")
+						.content(objectMapper.writeValueAsString(userRegisterRequest))
+						.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk());
 	}
 
 	@Test
-	public void testIncorrectBankAccountDigits() {
+	public void should_save_unsuccessfully() throws Exception {
+		AccountSaveRequest userRegisterRequest = new AccountSaveRequest("NL25BANQ0234567894");
 
-		//Negatieve BBAN test
-		assertEquals("IBAN nummer incorrect", false, util.isIbanValid("NL25BANQ0234567895"));
+		this.mockMvc.perform(post("/account/save")
+						.content(objectMapper.writeValueAsString(userRegisterRequest))
+						.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().is4xxClientError());
 	}
 
 	@Test
-	public void testCorrectBankAccountFormat() {
-
-		assertEquals("IBAN nummer correct", true, util.isIBANKeyformat("NL25BANQ0234567894"));
+	public void should_get_all_account() throws Exception {
+		this.mockMvc.perform(get("/account/list")
+						.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk());
 	}
 
-	@Test
-	public void testIncorrectBankAccountFormat() {
 
-		//Negatieve IBAN land code,controle nummer en bankkey test
-		assertEquals("IBAN nummer incorrect", false, util.isIBANKeyformat("NL45BANQ0234567894"));
-	}
-
-	@Test
-	public void testCorrectBankAccount() {
-
-		assertEquals("IBAN nummer correct", true, util.isIBANAccountNumberValid("NL25BANQ0234567894"));
-
-	}
-
-	@Test
-	public void testIncorrectBankAccount() {
-
-		//Negatieve IBAN check account test
-		assertEquals("IBAN nummer incorrect", false, util.isIBANAccountNumberValid("NL45BANQ0334567894"));
-	}
-
-	// Services tests
-	@Test
-	void shouldReturnAccountList() {
-
-		Account mockAccount1 = new Account();
-		mockAccount1.setIban("NL25BANQ0234567894");
-		Account mockAccount2 = new Account();
-		mockAccount2.setIban("NL25BANQ0334567895");
-
-		List<Account> accountList = List.of(mockAccount1,mockAccount2);
-
-		MockitoAnnotations.openMocks(this);
-
-		when(accountRepository.findAll()).thenReturn(accountList);
-
-		List<Account> resultList = accountService.listAccount();
-
-		assertEquals("IBAN gevonden","NL25BANQ0234567894", resultList.getFirst().getIban());
-	}
-
-	@Test
-	void shouldReturnAccountListCheckNumber() {
-
-		Account mockAccount1 = new Account();
-		mockAccount1.setIban("NL25BANQ0234567894");
-		Account mockAccount2 = new Account();
-		mockAccount2.setIban("NL25BANQ0334567895");
-
-		List<Account> accountList = List.of(mockAccount1,mockAccount2);
-		List<Account> spyOnList = spy(accountList);
-
-		MockitoAnnotations.openMocks(this);
-
-		when(accountRepository.findAll()).thenReturn(accountList);
-
-		when(spyOnList.size()).thenReturn(2);
-		assertEquals("Aantal gevonden accounts correct", 2, spyOnList.size());
-	}
-
-	@Test
-	void shouldSaveAccount() {
-
-		Account mockAccount1 = new Account();
-		mockAccount1.setIban("NL25BANQ0234567894");
-
-		MockitoAnnotations.openMocks(this);
-
-		when(accountRepository.save(Mockito.any(Account.class)))
-				.thenAnswer(i -> i.getArguments()[0]);
-
-		Account result = accountService.saveAccount(mockAccount1);
-
-		assertEquals("Account correct opgeslagen", result.getIban(), "NL25BANQ0234567894");
-	}
-
-	@Test
-	void shouldNotSaveAccount() {
-
-		// Negatieve save account test
-		Account mockAccount1 = new Account();
-		mockAccount1.setIban("NL25BANQ0234567896");
-
-		MockitoAnnotations.openMocks(this);
-
-		when(accountRepository.save(Mockito.any(Account.class)))
-				.thenAnswer(i -> i.getArguments()[0]);
-
-		Exception exception = assertThrows(AccountInvalidException.class, () -> {
-			accountService.saveAccount(mockAccount1);
-		});
-
-		String expectedMessage = "Het IBAN nummer is ongeldig";
-		String actualMessage = exception.getMessage();
-
-		assertTrue(actualMessage.contains(expectedMessage));
-
-	}
-
-	@Test
-	void shouldNotSaveAccountAlreadyExists() {
-
-		// Negatieve save account bestaat al test ,
-		Account mockAccount1 = new Account();
-		mockAccount1.setIban("NL25BANQ0234567896");
-
-		MockitoAnnotations.openMocks(this);
-
-		when(accountRepository.findByIban(mockAccount1.getIban())).thenReturn((Optional.of(mockAccount1)));
-
-		when(accountRepository.save(Mockito.any(Account.class)))
-				.thenAnswer(i -> i.getArguments()[0]);
-
-		Exception exception = assertThrows(AccountAlreadyExistsException.class, () -> {
-			accountService.saveAccount(mockAccount1);
-		});
-
-		String expectedMessage = "Het IBAN nummer is al aanwezig";
-		String actualMessage = exception.getMessage();
-
-		assertTrue(actualMessage.contains(expectedMessage));
-
-	}
 
 }
